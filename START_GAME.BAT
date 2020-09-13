@@ -49,7 +49,7 @@ IF [%sg#w%] EQU [] (
 		RD "%_root:~0,-2%" /s /q
 		GOTO :login_input
 	)
-	CALL bin\Special\Functions newPass,sg#res
+	CALL bin\Special\Functions newPass,sg#res,1
 	IF [!sg#!] NEQ [ok] GOTO :login_input
 ) ELSE (
 	CALL bin\IO\Input password,sg#pass

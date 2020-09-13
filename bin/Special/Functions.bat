@@ -23,7 +23,7 @@ GOTO %1
 :: ================================================== ::
 ::::::::::::::::::::::::::::::::::::::::::::::::::::::::
 
-:: newPass()
+:: newPass([new_user=0])
 :: setPass(newpass)
 :: getPass()
 :: getUpdates()
@@ -40,11 +40,12 @@ GOTO %1
 
 ::::::::::::::::::::::::::::::::::::::::::::::::::::::::
 :: ================================================== ::
-:: =============== function newPass() =============== ::
+:: ========= function newPass([new_user=0]) ========= ::
 :: ================================================== ::
 ::::::::::::::::::::::::::::::::::::::::::::::::::::::::
 
 :newPass
+IF [%~3] EQU [1] GOTO :newPass_new
 ECHO | SET /p ".=(Current) "
 CALL bin\IO\Input password,fs#pass0
 CALL bin\Special\Functions getPass,fs#w
@@ -52,6 +53,8 @@ IF [%fs#pass0%] NEQ [%fs#w%] (
 	ECHO Wrong password. Action cancelled.
 	GOTO :return
 )
+
+:newPass_new
 ECHO | SET /p ".=(New) "
 CALL bin\IO\Input password,fs#pass1
 ECHO | SET /p ".=(Re-type) "
@@ -61,12 +64,14 @@ IF [%fs#pass1%] NEQ [%fs#pass2%] (
 	ECHO.
 	GOTO :return
 )
+
 CALL bin\Special\Functions setPass,fs#res,"%fs#pass1%"
 IF [%fs#res%] EQU [err] (
 	ECHO You cannot use this password! Please, use more simple.
 	ECHO.
 	GOTO :newPass
 )
+
 SET fs#_RESULT=ok
 GOTO :return
 
