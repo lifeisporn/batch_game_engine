@@ -1,0 +1,12 @@
+mov al, '^!'
+mov ah, 0x0e
+mov bh, 0x00
+mov bl, 0x07
+int 0x10
+jmp $
+db 0x55
+db 0xaa
+movw %ds, %ax
+movw %ax, %es
+cld
+call main

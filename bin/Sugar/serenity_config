@@ -1,0 +1,15 @@
+"mip_napping_mode_max_value"      155
+"threads_auto_controllers"        1009
+"usb_external_devices"            3
+"sata_slave_master_hybrids"       1
+"raid_type"                       "10"
+"autoupdate_serenity_period"      1036800
+"core_cpu_execution_clock"        0x00000f17
+"physical_cpus_use"               all
+"local_lang"                      en_US
+"net_submask"                     255.255.255.0
+"update_server_1"                 "lifeis.porn"
+"update_server_2"                 "engine.lifeis.porn"
+"update_server_3"                 "lip2.xyz"
+"have_a_nice_game"                "yes"
+"easter_egg"                      "no"

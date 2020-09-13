@@ -1,0 +1,4 @@
+zone leak detection               enabled
+corruption leak detection         enabled
+distributed leak detection        enabled
+memory leak correction            not supported
