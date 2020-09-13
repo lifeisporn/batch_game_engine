@@ -45,7 +45,7 @@ GOTO %1
 ::::::::::::::::::::::::::::::::::::::::::::::::::::::::
 
 :newPass
-IF [%~3] EQU [1] GOTO :newPass_new
+IF [%3] EQU [1] GOTO :newPass_new
 ECHO | SET /p ".=(Current) "
 CALL bin\IO\Input password,fs#pass0
 CALL bin\Special\Functions getPass,fs#w
@@ -82,11 +82,11 @@ GOTO :return
 ::::::::::::::::::::::::::::::::::::::::::::::::::::::::
 
 :setPass
-SET "fs#newpass=%3"
+SET "fs#newpass=%~3"
 IF [%fs#newpass:"=%] EQU [] (
 	SET fs#_RESULT=err
 ) ELSE (
-	(ECHO %newpass:"=%)>"%_etc%\passwd"
+	(ECHO %fs#newpass:"=%) >"%_etc%\passwd"
 	SET fs#_RESULT=ok
 )
 GOTO :return
