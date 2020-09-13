@@ -34,7 +34,7 @@ GOTO %1
 :: countItems(list)
 :: randomURI()
 :: delay(milliseconds)
-:: random(min, max[, offset])
+:: random(min,max[,offset])
 :: hex_rand(length[,lowercase=0])
 :: dec2hex(decimal[,lowercase=0])
 
@@ -161,8 +161,14 @@ GOTO :return
 ::::::::::::::::::::::::::::::::::::::::::::::::::::::::
 
 :length
-SET fs#string=%3
-IF [!fs#string:~%fs#_RESULT%!] NEQ [] SET /a fs#_RESULT+=1 & GOTO :length
+SET fs#string=%~3
+
+:length_loop
+IF [!fs#string:~%fs#_RESULT%!] NEQ [] (
+	SET /a fs#_RESULT+=1
+	GOTO :length_loop
+)
+
 GOTO :return
 
 ::::::::::::::::::::::::::::::::::::::::::::::::::::::::
@@ -214,6 +220,7 @@ GOTO :return
 REM Минимум - 50мс, дальше скрипт не успевает; погрешность ~10мс
 SET fs#call_delay_fix=5
 CALL :delay_get_ms "%time%",fs#time_start_ms
+
 :delay_loop
 CALL :delay_get_ms "%time%",fs#time_current_ms
 SET /a fs#time_diff=%fs#time_current_ms%-%fs#time_start_ms%+%fs#call_delay_fix%

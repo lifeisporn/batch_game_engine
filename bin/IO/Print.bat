@@ -21,7 +21,7 @@ GOTO %1
 ::::::::::::::::::::::::::::::::::::::::::::::::::::::::
 
 :: table(header,body)
-:: colored(bg_color,font_color,text,return)
+:: colored(bg_color,font_color,text[,return=0])
 :: tty_info(pr#color_out,pr#color_in,text1,text2,return)
 :: slowecho(text)
 :: updecho(text)
@@ -191,7 +191,7 @@ GOTO :eof
 
 ::::::::::::::::::::::::::::::::::::::::::::::::::::::::
 :: ================================================== ::
-:: ==== colored(bg_color,font_color,text,return) ==== ::
+:: == colored(bg_color,font_color,text[,return=0]) == ::
 :: ================================================== ::
 ::::::::::::::::::::::::::::::::::::::::::::::::::::::::
 
