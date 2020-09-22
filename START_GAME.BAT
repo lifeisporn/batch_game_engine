@@ -1,39 +1,33 @@
 @ECHO off
-REM Префикс для переменных: sg#имя_переменной
-::::::::::::::::::::::::::::::::::::::::::::::::::::::::
-:: ================================================== ::
-:: ==================== Параметры =================== ::
-:: ================================================== ::
-::::::::::::::::::::::::::::::::::::::::::::::::::::::::
+REM Variables naming rule: <sg#varname>
 SETLOCAL EnableExtensions EnableDelayedExpansion
 CHCP 65001>nul
 TITLE Serenity Batch Engine
 
-REM Начальные установки
+REM Initial setting
 SET "_tmp=%cd%\tmp"
-
-
-rem goto :login_input
+RD "%_tmp%" /s /q > nul 2>nul
 
 CALL bin\Sugar\TurnOn
-CLS
 
 :login_input
+CLS
 SET /p "login=login: "
+IF [%login%] EQU [] GOTO :login_input
 
-REM Переменные окружения
+REM Environment variables
 SET "_CUR_PATH=~"
 SET "_CUR_ADDR=localhost"
 SET "_CUR_USER=%login%"
 
-REM Константы
+REM Constants
 SET "_root=%cd%\usr\%_CUR_USER%\~"
 SET "_logs=%_root%\logs"
 SET "_etc=%_root%\etc"
 SET "_local=%_root%\local"
 SET "_cache=%_root%\cache"
 
-REM Директории пользователя
+REM User's sandbox filesystem
 MD "%_logs%" > nul 2>nul
 MD "%_etc%" > nul 2>nul
 MD "%_local%" > nul 2>nul
@@ -41,7 +35,6 @@ MD "%_cache%" > nul 2>nul
 
 :password_input
 CALL bin\Special\Functions getPass,sg#w
-ECHO.
 IF [%sg#w%] EQU [] (
 	CHOICE /n /m "User `%login%` is not registered yet. Do you want to create a new profile (y/n)?:"
 	ECHO.
@@ -50,7 +43,7 @@ IF [%sg#w%] EQU [] (
 		GOTO :login_input
 	)
 	CALL bin\Special\Functions newPass,sg#res,1
-	IF [!sg#!] NEQ [ok] GOTO :login_input
+	IF [!sg#res!] NEQ [ok] GOTO :login_input
 ) ELSE (
 	CALL bin\IO\Input password,sg#pass
 	IF [!sg#pass!] NEQ [%sg#w%] (
@@ -65,10 +58,10 @@ CLS
 CALL bin\Sugar\Welcome
 
 :user_input
-CALL bin\IO\Input prompt_line,%_CUR_USER%,%_CUR_ADDR%,"%_CUR_PATH%"
+CALL bin\IO\Input prompt_line
 
 SET /p "sg#input="
-REM Нужно обнулить, иначе скрипт вернёт старый результат в случае ошибки
+REM <sg#cmd_result> must be reset, otherwise the script will return the old result
 SET "sg#cmd_result="
 CALL bin\IO\CommandsHandler sg#cmd_result,"%sg#input%"
 IF [%sg#cmd_result%] EQU [] (

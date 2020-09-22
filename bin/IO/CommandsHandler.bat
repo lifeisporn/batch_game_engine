@@ -1,23 +1,10 @@
-REM
-REM ВНИМАНИЕ! В ЭТОМ СКРИПТЕ ПЕРЕМЕННАЯ ВОЗВРАТА СТАВИТСЯ ПЕРЕД ПАРАМЕТРАМИ!!!
-REM
-::::::::::::::::::::::::::::::::::::::::::::::::::::::::
-:: %~1 - Переменная возврата                          ::
-:: %2  - Данные ввода пользователя                    ::
-::::::::::::::::::::::::::::::::::::::::::::::::::::::::
-REM Префикс для переменных: ch#имя_переменной
-::::::::::::::::::::::::::::::::::::::::::::::::::::::::
-:: ================================================== ::
-:: ==================== Параметры =================== ::
-:: ================================================== ::
-::::::::::::::::::::::::::::::::::::::::::::::::::::::::
-
+REM Variables naming rule: <ch#varname>
 SETLOCAL EnableExtensions EnableDelayedExpansion
-CHCP 65001>nul
+CHCP 65001 > nul 2>nul
 
 SET "ch#help_filler=------------------------------------------------------------------------"
 
-REM Попробуем убрать символы, которые могут убить консоль
+REM Trying to delete symbols that can crash console. Quotes replacement should be the last.
 SET ch#raw=%2
 SET ch#raw=%ch#raw:,=%
 SET ch#raw=%ch#raw:|=%
@@ -25,13 +12,13 @@ SET ch#raw=%ch#raw:>=%
 SET ch#raw=%ch#raw:<=%
 SET ch#raw=%ch#raw:"=%
 
-REM Разбираем входные данные на команду и параметры
+REM Explode raw data into command and params
 FOR /F "tokens=1* delims= " %%a IN ("%ch#raw%") DO (
 	SET "ch#cmd=%%a"
 	SET ch#params="%%b"
 )
 
-REM Чтобы изменить глобальные переменные, используем эти
+REM Using local vars for change globals
 SET "ch#_CUR_PATH=%_CUR_PATH%"
 SET "ch#_CUR_USER=%_CUR_USER%"
 SET "ch#_CUR_ADDR=%_CUR_ADDR%"
@@ -40,12 +27,13 @@ GOTO %ch#cmd% > nul 2>nul
 
 ::::::::::::::::::::::::::::::::::::::::::::::::::::::::
 :: ================================================== ::
-:: ===================== Функции ==================== ::
+:: ================= Functions list ================= ::
 :: ================================================== ::
 ::::::::::::::::::::::::::::::::::::::::::::::::::::::::
-REM Закрывающую скобку нужно экранировать!
 
 :: help()
+:: news(irc_channel)
+:: irc()
 :: pass()
 :: whoami()
 :: cd(newpath)
@@ -56,7 +44,7 @@ REM Закрывающую скобку нужно экранировать!
 
 ::::::::::::::::::::::::::::::::::::::::::::::::::::::::
 :: ================================================== ::
-:: ================= COMMAND help() ================= ::
+:: ====================== HELP ====================== ::
 :: ================================================== ::
 ::::::::::::::::::::::::::::::::::::::::::::::::::::::::
 
@@ -64,19 +52,92 @@ REM Закрывающую скобку нужно экранировать!
 REM ----------------------------------------------------
 ECHO %ch#help_filler%
 ECHO   You can use the following commands:
-ECHO      HELP      Show commands list.
-ECHO      CD        Change current directory.
-ECHO      LS        List files and subdirectories of current directory.
-ECHO      CLS       Clear console.
-ECHO      LOGOUT    Log out.
-ECHO      SHUTDOWN  Shut down the system.
+ECHO      HELP         Show commands list.
+ECHO      NEWS         Open special news feed.
+ECHO      IRC          Open IRC client.
+ECHO      PASS         Change password.
+ECHO      CD           Change current directory.
+ECHO      LS           List files and subdirectories of current directory.
+ECHO      CLS          Clear console.
+ECHO      LOGOUT       Log out.
+ECHO      SHUTDOWN     Shut down the system.
 ECHO %ch#help_filler%
 REM ----------------------------------------------------
 GOTO :return
 
 ::::::::::::::::::::::::::::::::::::::::::::::::::::::::
 :: ================================================== ::
-:: ================= COMMAND pass() ================= ::
+:: ======================= NEWS ====================== ::
+:: ================================================== ::
+::::::::::::::::::::::::::::::::::::::::::::::::::::::::
+
+:news
+IF [%ch#params:-h=%] NEQ [%ch#params%] (
+	ECHO %ch#help_filler%
+	ECHO   Usage:
+	ECHO          NEWS [-h][channel]
+	ECHO.
+	ECHO   Info:
+	ECHO          Open special news feed.
+	ECHO.
+	ECHO   Parameters:
+	ECHO          -h        Show this help.
+	ECHO          channel   Use "channel" as news provider. News feed will
+	ECHO                    be provided by the specified IRC channel
+	ECHO                    (enter channel name without sharp sign^).
+	ECHO %ch#help_filler%
+	
+	GOTO :return
+)
+IF [%ch#params:-=%] NEQ [%ch#params%] (
+	SET ch#cmd=err
+	GOTO :return
+)
+IF [%ch#params:"=%] EQU [] (
+	SET ch#cmd=err
+	GOTO :return
+)
+REM ----------------------------------------------------
+START bin\Special\News\News.core %ch#params%
+REM ----------------------------------------------------
+GOTO :return
+
+::::::::::::::::::::::::::::::::::::::::::::::::::::::::
+:: ================================================== ::
+:: ======================= IRC ====================== ::
+:: ================================================== ::
+::::::::::::::::::::::::::::::::::::::::::::::::::::::::
+
+:irc
+IF [%ch#params:-h=%] NEQ [%ch#params%] (
+	ECHO %ch#help_filler%
+	ECHO   Usage:
+	ECHO          IRC [-h]
+	ECHO.
+	ECHO   Info:
+	ECHO          Open IRC client.
+	ECHO.
+	ECHO   Parameters:
+	ECHO          -h        Show this help.
+	ECHO.
+	ECHO   Notes: 
+	ECHO          • System will connect to local freenode server.
+	ECHO %ch#help_filler%
+	
+	GOTO :return
+)
+IF [%ch#params:-=%] NEQ [%ch#params%] (
+	SET ch#cmd=err
+	GOTO :return
+)
+REM ----------------------------------------------------
+START bin\Special\IRC\IRC.core
+REM ----------------------------------------------------
+GOTO :return
+
+::::::::::::::::::::::::::::::::::::::::::::::::::::::::
+:: ================================================== ::
+:: ====================== PASS ====================== ::
 :: ================================================== ::
 ::::::::::::::::::::::::::::::::::::::::::::::::::::::::
 
@@ -84,13 +145,13 @@ GOTO :return
 IF [%ch#params:-h=%] NEQ [%ch#params%] (
 	ECHO %ch#help_filler%
 	ECHO   Usage:
-	ECHO      PASS [-h]
+	ECHO          PASS [-h]
 	ECHO.
 	ECHO   Info:
-	ECHO      Change password.
+	ECHO          Change password.
 	ECHO.
 	ECHO   Parameters:
-	ECHO      -h        Show this help.
+	ECHO          -h        Show this help.
 	ECHO %ch#help_filler%
 	
 	GOTO :return
@@ -111,7 +172,7 @@ GOTO :return
 
 ::::::::::::::::::::::::::::::::::::::::::::::::::::::::
 :: ================================================== ::
-:: ================ COMMAND whoami() ================ ::
+:: ===================== WHOAMI ===================== ::
 :: ================================================== ::
 ::::::::::::::::::::::::::::::::::::::::::::::::::::::::
 
@@ -132,7 +193,7 @@ GOTO :return
 
 ::::::::::::::::::::::::::::::::::::::::::::::::::::::::
 :: ================================================== ::
-:: =============== COMMAND cd(newpath) ============== ::
+:: ======================= CD ======================= ::
 :: ================================================== ::
 ::::::::::::::::::::::::::::::::::::::::::::::::::::::::
 
@@ -140,21 +201,21 @@ GOTO :return
 IF [%ch#params:-h=%] NEQ [%ch#params%] (
 	ECHO %ch#help_filler%
 	ECHO   Usage:
-	ECHO      CD [.][..][path][-h]
+	ECHO          CD [.][..][path][-h]
 	ECHO.
 	ECHO   Info:
-	ECHO      Change current directory.
+	ECHO          Change current directory.
 	ECHO.
 	ECHO   Parameters:
-	ECHO      .         Go up to root directory.
-	ECHO      ..        Go up to parent directory.
-	ECHO      -h        Show this help.
-	ECHO      path      Go to specified "path" (use backslash "\" for 
-	ECHO                separate directories^).
+	ECHO          .         Go up to root directory.
+	ECHO          ..        Go up to parent directory.
+	ECHO          -h        Show this help.
+	ECHO          path      Go to specified "path" (use backslash "\" for 
+	ECHO                    separate directories^).
 	ECHO.
 	ECHO   Notes: 
-	ECHO      • Please use only the following character set
-	ECHO        in directory names: 0-9,a-b,A-Z,_
+	ECHO          • Please use only the following character set
+	ECHO            in directory names: 0-9,a-b,A-Z,_
 	ECHO %ch#help_filler%
 	
 	GOTO :return
@@ -199,7 +260,7 @@ GOTO :return
 
 ::::::::::::::::::::::::::::::::::::::::::::::::::::::::
 :: ================================================== ::
-:: ================== COMMAND ls() ================== ::
+:: ======================= LS ======================= ::
 :: ================================================== ::
 ::::::::::::::::::::::::::::::::::::::::::::::::::::::::
 
@@ -207,17 +268,17 @@ GOTO :return
 IF [%ch#params:-h=%] NEQ [%ch#params%] (
 	ECHO %ch#help_filler%
 	ECHO   Usage:
-	ECHO      LS [-h]
+	ECHO          LS [-h]
 	ECHO.
 	ECHO   Info:
-	ECHO      List files and subdirectories of current directory.
+	ECHO          List files and subdirectories of current directory.
 	ECHO.
 	ECHO   Parameters:
-	ECHO      -h        Show this help.
+	ECHO          -h        Show this help.
 	ECHO.
 	ECHO   Notes: 
-	ECHO      • If there is a colon after the name of any file or subdirectory - 
-	ECHO      this is a command bug, not a name part, do not pay attention.
+	ECHO          • If there is a colon after the name of any file or subdirectory - 
+	ECHO            this is a command bug, not a name part, do not pay attention.
 	ECHO %ch#help_filler%
 	
 	GOTO :return
@@ -239,7 +300,7 @@ GOTO :return
 
 ::::::::::::::::::::::::::::::::::::::::::::::::::::::::
 :: ================================================== ::
-:: ================== COMMAND cls() ================= ::
+:: ======================= CLS ====================== ::
 :: ================================================== ::
 ::::::::::::::::::::::::::::::::::::::::::::::::::::::::
 
@@ -247,13 +308,13 @@ GOTO :return
 IF [%ch#params:-h=%] NEQ [%ch#params%] (
 	ECHO %ch#help_filler%
 	ECHO   Usage:
-	ECHO      CLS [-h]
+	ECHO          CLS [-h]
 	ECHO.
 	ECHO   Info:
-	ECHO      Clear console.
+	ECHO          Clear console.
 	ECHO.
 	ECHO   Parameters:
-	ECHO      -h        Show this help.
+	ECHO          -h        Show this help.
 	ECHO %ch#help_filler%
 	
 	GOTO :return
@@ -269,7 +330,7 @@ GOTO :return
 
 ::::::::::::::::::::::::::::::::::::::::::::::::::::::::
 :: ================================================== ::
-:: ================ COMMAND logout() ================ ::
+:: ===================== LOGOUT ===================== ::
 :: ================================================== ::
 ::::::::::::::::::::::::::::::::::::::::::::::::::::::::
 
@@ -277,13 +338,13 @@ GOTO :return
 IF [%ch#params:-h=%] NEQ [%ch#params%] (
 	ECHO %ch#help_filler%
 	ECHO   Usage:
-	ECHO      LOGOUT [-h]
+	ECHO          LOGOUT [-h]
 	ECHO.
 	ECHO   Info:
-	ECHO      Log out.
+	ECHO          Log out.
 	ECHO.
 	ECHO   Parameters:
-	ECHO      -h        Show this help.
+	ECHO          -h        Show this help.
 	ECHO %ch#help_filler%
 	
 	GOTO :return
@@ -299,7 +360,7 @@ GOTO :return
 
 ::::::::::::::::::::::::::::::::::::::::::::::::::::::::
 :: ================================================== ::
-:: =============== COMMAND shutdown() =============== ::
+:: ==================== SHUTDOWN ==================== ::
 :: ================================================== ::
 ::::::::::::::::::::::::::::::::::::::::::::::::::::::::
 
@@ -307,13 +368,13 @@ GOTO :return
 IF [%ch#params:-h=%] NEQ [%ch#params%] (
 	ECHO %ch#help_filler%
 	ECHO   Usage:
-	ECHO      SHUTDOWN [-h]
+	ECHO          SHUTDOWN [-h]
 	ECHO.
 	ECHO   Info:
-	ECHO      Shut down the system.
+	ECHO          Shut down the system.
 	ECHO.
 	ECHO   Parameters:
-	ECHO      -h        Show this help.
+	ECHO          -h        Show this help.
 	ECHO %ch#help_filler%
 	
 	GOTO :return

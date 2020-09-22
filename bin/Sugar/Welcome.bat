@@ -1,4 +1,4 @@
-REM Префикс для переменных: wc#имя_переменной
+REM Variables naming rule: <wc#varname>
 
 SET "wc#current_login=%date% %time:~0,-3% on %COMPUTERNAME%/%_CUR_ADDR%"
 
@@ -13,9 +13,9 @@ IF EXIST "%_logs%\last_login.dat" (
 ECHO %wc#current_login%>"%_logs%\last_login.dat"
 ECHO Welcome to Serenity Batch Engine (BATCH/Console cmd.exe x86_x64)
 ECHO.
-ECHO    * Documentation:    https://engine.lifeis.porn/
+ECHO    * Documentation:    https://github.com/lifeisporn/batch_game_engine
 ECHO    * Owner:            Life Is Porn
-ECHO    * Support:          support@lifeis.porn
+ECHO    * Support:          trash-11@mail.ru
 ECHO.
 CALL bin\Special\Functions getUpdates,count_updates
 CALL bin\Special\Functions getFixes,count_fixes

@@ -5,7 +5,6 @@ CALL bin\Special\Functions delay,r,1000
 
 FOR /F "tokens=*" %%l IN (bin\Sugar\serenity_shutdown) DO (
 	CALL bin\IO\Print tty_info,bwhite,lgreen,OK,"%%l",1
-	CALL bin\Special\Functions delay,r,100
 )
 ECHO.
 
