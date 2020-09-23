@@ -1,8 +1,8 @@
-IF EXIST bin\Sugar\TurnOn_flag (
+IF EXIST bin\Sugar\TurnOn_flag.txt (
 	CHOICE /N /M "Do you want to skip the turn on animation (y/n)? "
 	IF [!errorlevel!] EQU [1] GOTO :eof
 ) ELSE (
-	ECHO 1>bin\Sugar\TurnOn_flag
+	ECHO 1>bin\Sugar\TurnOn_flag.txt
 )
 
 CLS
